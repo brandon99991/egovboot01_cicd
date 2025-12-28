@@ -12,7 +12,7 @@ pipeline {
         // 본인의 username으로 하실 분은 수정해주세요.
         dockerhub_cred = credentials('docker-cred')
         DOCKERHUB_USERNAME = 'brandon9999'
-        GITHUB_URL = 'https://github.com/brandon99991/egov01_cicd.git'
+        GITHUB_URL = 'https://github.com/brandon99991/egovboot01_cicd.git'
 
         // 실습 넘버링
         CLASS_NUM = '2212'
@@ -30,8 +30,8 @@ pipeline {
                 sh "kubectl config view --minify"
 
                 // K8S deploy
-                sh "kubectl apply -f ./cicd-wsl_docker/deploy/k8s/egov01_deploy.yaml"
-                sh "kubectl apply -f ./cicd-wsl_docker/deploy/k8s/egov01_svc.yaml"
+                sh "kubectl apply -f ./cicd-wsl_docker/deploy/k8s/egovboot01_deploy.yaml"
+                sh "kubectl apply -f ./cicd-wsl_docker/deploy/k8s/egovboot01_svc.yaml"
             }
         }
     }

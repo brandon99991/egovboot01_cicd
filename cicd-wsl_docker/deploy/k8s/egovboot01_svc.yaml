@@ -3,14 +3,14 @@ kind: Service
 metadata:
   creationTimestamp: null
   labels:
-    app: egov01
-  name: egov01-svc
+    app: egovboot01
+  name: egovboot01-svc
 spec:
   ports:
   - port: 80
     protocol: TCP
     targetPort: 8080
   selector:
-    app: egov01
+    app: egovboot01
 status:
   loadBalancer: {}
