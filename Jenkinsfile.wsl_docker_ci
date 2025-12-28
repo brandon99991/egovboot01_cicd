@@ -1,0 +1,74 @@
+pipeline {
+    agent any
+    // agent { label 'master-jenkins' }
+
+    tools {
+        //gradle 'gradle-7.6.1'
+        maven 'Maven3.9.9'
+        jdk 'JDK8'
+    }
+
+    environment {
+        // 본인의 username으로 하실 분은 수정해주세요.
+        dockerhub_cred = credentials('docker-cred')
+        DOCKERHUB_USERNAME = 'brandon9999'
+        GITHUB_URL = 'https://github.com/brandon99991/egovboot01_cicd.git'
+
+        // 실습 넘버링
+        CLASS_NUM = '2212'
+
+        KUBECONFIG = '/home/user01/.kube.rocky/config'
+    }
+    
+    stages {
+        // Source CheckOut
+        stage('Source CheckOut') {
+            steps {
+                // 소스코드를 가져올 Github 주소
+                git branch: 'main', url: 'https://github.com/brandon99991/egovboot01.git'
+            }
+        }
+
+        // Source Build
+        stage('Source Build') {
+            steps {
+                // 755권한 필요 (윈도우에서 Git으로 소스 업로드시 권한은 644)
+                //sh "chmod +x ./gradlew"
+                //sh "gradle clean build"
+                //bat "mvn clean deploy" // 윈도우용
+                //sh "mvn -f pom-repo_docker.xml clean deploy"    // 리눅스용
+                sh "mvn clean deploy"    // 리눅스용
+            }
+        }
+
+        // 도커 빌드를 위한 Dockerfile등을 가져오기 (Release File CheckOut)
+        stage('egovi01_cicd CheckOut') {
+            steps {
+                checkout scmGit(branches: [[name: '*/main']],
+                   // extensions: [[$class: 'SparseCheckoutPaths',
+                   // sparseCheckoutPaths: [[path: "/${CLASS_NUM}"]]]],
+					userRemoteConfigs: [[url: "${GITHUB_URL}"]])
+            }
+        }
+
+        stage('Docker Build') {
+            steps {
+                // jar 파일 복사
+                sh "cp ./target/egovboot01-1.0.0-SNAPSHOT.jar ./cicd-wsl_docker/build/docker/egovboot01-1.0.0-SNAPSHOT.jar"
+
+                // 도커 빌드
+                sh "docker build -t ${DOCKERHUB_USERNAME}/egovboot01:v1.0.0 ./cicd-wsl_docker/build/docker"
+            }
+        }
+
+        //stage('DockerHub Push'){
+        //    steps{
+        //        // echo pass --> using pipes we are gonna provide it is a input to a cmd
+        //        sh 'echo $dockerhub_cred_PSW | docker login -u $dockerhub_cred_USR --password-stdin'
+        //        sh 'docker push brandon9999/egovboot01:v1.0.0'
+        //    }
+        //}
+
+
+    }
+}
