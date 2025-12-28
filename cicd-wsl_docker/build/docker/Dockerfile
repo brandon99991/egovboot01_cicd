@@ -1,24 +1,20 @@
-# Tomcat 9 + JDK 8
-FROM tomcat:9.0-jdk8-temurin-jammy
+# Spring Boot JAR 실행용 (가볍고 보편적)
+FROM eclipse-temurin:17-jre
+WORKDIR /app
 
-# (선택) 기본 예제 webapp 제거
-RUN rm -rf /usr/local/tomcat/webapps/*
+# (선택) 컨테이너 시간대
+ENV TZ=Asia/Seoul
 
-# ===== 기본 환경변수(필요 시 docker run -e 로 덮어쓰기) =====
-ENV SPRING_PROFILES_ACTIVE=default \
-    APPLICATION_ROLE=app \
-    POSTGRESQL_FILEPATH=/config/postgresql.properties
+# JAR 복사 (빌드 산출물 이름에 맞게 수정)
+COPY ./egovboot01-1.0.0-SNAPSHOT.jar /app/egovboot01.jar
 
-# ===== WAR 배포 =====
-# 컨텍스트를 / 로 쓰려면 ROOT.war 로 배포
-COPY ./egov01-1.0.0-SNAPSHOT.war /usr/local/tomcat/webapps/ROOT.war
+# (선택) JVM 옵션은 환경변수로 주입
+ENV JAVA_OPTS=""
 
-# ===== JVM 옵션 주입 (Tomcat 기동 시 setenv.sh 읽음) =====
-RUN printf '%s\n' \
-  '#!/bin/sh' \
-  'export CATALINA_OPTS="$CATALINA_OPTS -Dspring.profiles.active=${SPRING_PROFILES_ACTIVE} -Dapplication.role=${APPLICATION_ROLE} -Dpostgresql.filepath=${POSTGRESQL_FILEPATH}"' \
-  > /usr/local/tomcat/bin/setenv.sh \
-  && chmod +x /usr/local/tomcat/bin/setenv.sh
+# Spring profile 등도 환경변수로 주입 가능
+ENV SPRING_PROFILES_ACTIVE="prod"
 
 EXPOSE 8080
-CMD ["catalina.sh", "run"]
+
+# 셸 없이 exec-form 권장
+ENTRYPOINT ["sh", "-c", "java $JAVA_OPTS -jar /app/egovboot01.jar --spring.profiles.active=$SPRING_PROFILES_ACTIVE"]

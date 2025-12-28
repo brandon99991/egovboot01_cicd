@@ -51,23 +51,23 @@ pipeline {
             }
         }
 
-        //stage('Docker Build') {
-        //    steps {
-        //        // jar 파일 복사
-        //        sh "cp ./target/egovboot01-1.0.0-SNAPSHOT.jar ./cicd-wsl_docker/build/docker/egovboot01-1.0.0-SNAPSHOT.jar"
+        stage('Docker Build') {
+            steps {
+                // jar 파일 복사
+                sh "cp ./target/egovboot01-1.0.0-SNAPSHOT.jar ./cicd-wsl_docker/build/docker/egovboot01-1.0.0-SNAPSHOT.jar"
 
-        //        // 도커 빌드
-        //        sh "docker build -t ${DOCKERHUB_USERNAME}/egovboot01:v1.0.0 ./cicd-wsl_docker/build/docker"
-        //    }
-        //}
+                // 도커 빌드
+                sh "docker build -t ${DOCKERHUB_USERNAME}/egovboot01:v1.0.0 ./cicd-wsl_docker/build/docker"
+            }
+        }
 
-        //stage('DockerHub Push'){
-        //    steps{
-        //        // echo pass --> using pipes we are gonna provide it is a input to a cmd
-        //        sh 'echo $dockerhub_cred_PSW | docker login -u $dockerhub_cred_USR --password-stdin'
-        //        sh 'docker push brandon9999/egovboot01:v1.0.0'
-        //    }
-        //}
+        stage('DockerHub Push'){
+            steps{
+                // echo pass --> using pipes we are gonna provide it is a input to a cmd
+                sh 'echo $dockerhub_cred_PSW | docker login -u $dockerhub_cred_USR --password-stdin'
+                sh 'docker push brandon9999/egovboot01:v1.0.0'
+            }
+        }
 
 
     }
