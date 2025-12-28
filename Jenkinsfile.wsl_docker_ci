@@ -51,15 +51,15 @@ pipeline {
             }
         }
 
-        stage('Docker Build') {
-            steps {
-                // jar 파일 복사
-                sh "cp ./target/egovboot01-1.0.0-SNAPSHOT.jar ./cicd-wsl_docker/build/docker/egovboot01-1.0.0-SNAPSHOT.jar"
+        //stage('Docker Build') {
+        //    steps {
+        //        // jar 파일 복사
+        //        sh "cp ./target/egovboot01-1.0.0-SNAPSHOT.jar ./cicd-wsl_docker/build/docker/egovboot01-1.0.0-SNAPSHOT.jar"
 
-                // 도커 빌드
-                sh "docker build -t ${DOCKERHUB_USERNAME}/egovboot01:v1.0.0 ./cicd-wsl_docker/build/docker"
-            }
-        }
+        //        // 도커 빌드
+        //        sh "docker build -t ${DOCKERHUB_USERNAME}/egovboot01:v1.0.0 ./cicd-wsl_docker/build/docker"
+        //    }
+        //}
 
         //stage('DockerHub Push'){
         //    steps{
